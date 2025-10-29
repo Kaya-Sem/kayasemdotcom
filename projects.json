@@ -1,0 +1,64 @@
+{
+    "projects": [
+        {
+            "name": "We are Hackathon 2025",
+            "description": "Fun hackathon hosted by We Are.",
+            "link": "https://github.com/weAreHackaton",
+            "tags": ["event", "flutter", "mobile"]
+        },
+        {
+            "name": "Outdoor Gear Shops",
+            "description": "List of outdoor gear shops",
+            "link": "https://outdoorshops.kaya-sem.com/",
+            "tags": ["web"]
+        },
+        {
+            "name": "Commandtrein",
+            "description": "CLI NMBS schedule tool",
+            "link": "https://github.com/Kaya-Sem/commandtrein",
+            "tags": ["go", "cli", "api"]
+        },
+        {
+            "name": "RSS-builder",
+            "description": "Simple RSS library",
+            "link": "https://github.com/Kaya-Sem/rss-builder",
+            "tags": ["go", "RSS", "library"]
+        },
+        {
+            "name": "Oopsie",
+            "description": "Simple Error display library for Go",
+            "link": "https://github.com/Kaya-Sem/oopsie",
+            "tags": ["go", "cli", "library"]
+        },
+        {
+            "name": "Gent-nieuws RSS",
+            "description": "Gent Nieuwsberichten RSS generator",
+            "link": "https://github.com/Kaya-Sem/gent-nieuws-rss",
+            "tags": ["go", "RSS", "docker"]
+        },
+        {
+            "name": "BotBattle",
+            "description": "Designed a language and parser",
+            "link": "https://botbattle.be/",
+            "tags": ["language design", "parser"]
+        },
+        {
+            "name": "Friendsync",
+            "description": "Organize meeting with friends efficiently",
+            "link": "https://github.com/Kaya-Sem/friendsync",
+            "tags": ["flutter", "mobile", "firebase"]
+        },
+        {
+            "name": "DSA",
+            "description": "Student job at UGent",
+            "link": "https://https://dsa.ugent.be/",
+            "tags": ["Elixir", "web", "Phoenix"]
+        },
+        {
+            "name": "kaya-scam.com",
+            "description": "my less serious website",
+            "link": "https://kaya-scam.com/",
+            "tags": ["web"]
+        }
+    ]
+}

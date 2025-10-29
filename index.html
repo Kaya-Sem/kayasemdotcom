@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaya Sem - Personal Website</title>
+    <style>
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <ul>
+        <li><a href="https://github.com/Kaya-Sem" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+        <li><a href="/cv">CV</a></li>
+    </ul>
+
+    <h3>Websites</h3>
+    <ul>
+        <li><a href="https://rooftopper.club/" target="_blank" rel="noopener noreferrer">Rooftopper</a></li>
+        <li><a href="https://outdoorshops.kaya-sem.com/" target="_blank" rel="noopener noreferrer">Outdoor Gear Shops</a></li>
+        <li><a href="https://kaya-scam.com/" target="_blank" rel="noopener noreferrer">Kaya-Scam</a> </li>
+    </ul>
+
+    <h2>Projects Graph</h2>
+    <div id="graph-container"></div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        // Load data from external JSON file
+        fetch('projects.json')
+            .then(response => response.json())
+            .then(data => {
+                createGraph(data);
+            })
+            .catch(error => {
+                console.error('Error loading projects data:', error);
+                document.getElementById('graph-container').innerHTML = '<p>Error loading projects data</p>';
+            });
+
+        function createGraph(data) {
+
+        // Create project nodes
+        const projectNodes = data.projects.map(project => ({
+            id: project.name,
+            name: project.name,
+            description: project.description,
+            link: project.link,
+            tags: project.tags,
+            type: 'project'
+        }));
+
+        // Get all unique technologies
+        const allTags = [...new Set(data.projects.flatMap(project => project.tags))];
+        
+        // Create technology nodes
+        const techNodes = allTags.map(tag => ({
+            id: tag,
+            name: tag,
+            type: 'technology'
+        }));
+
+        // Combine all nodes
+        const nodes = [...projectNodes, ...techNodes];
+
+        // Create links between projects and their technologies
+        const links = [];
+        data.projects.forEach(project => {
+            project.tags.forEach(tag => {
+                links.push({
+                    source: project.name,
+                    target: tag
+                });
+            });
+        });
+
+        // Set up SVG
+        const width = 800;
+        const height = 600;
+        const padding = 50; // Padding to keep nodes away from edges
+        const svg = d3.select("#graph-container")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        // Create simulation with boundary constraints
+        const simulation = d3.forceSimulation(nodes)
+            .force("link", d3.forceLink(links).id(d => d.id).distance(80))
+            .force("charge", d3.forceManyBody().strength(-200))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collision", d3.forceCollide().radius(d => d.type === 'technology' ? 8 : 12))
+            .force("x", d3.forceX(width / 2).strength(0.1))
+            .force("y", d3.forceY(height / 2).strength(0.1));
+
+        // Create links
+        const link = svg.append("g")
+            .selectAll("line")
+            .data(links)
+            .enter().append("line")
+            .attr("stroke", "#999")
+            .attr("stroke-opacity", 0.6)
+            .attr("stroke-width", 1);
+
+        // Create nodes
+        const node = svg.append("g")
+            .selectAll("circle")
+            .data(nodes)
+            .enter().append("circle")
+            .attr("r", d => d.type === 'technology' ? 4 : 6)
+            .attr("fill", d => d.type === 'technology' ? "#95a5a6" : "#ff6b6b")
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 2)
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+        // Add labels
+        const label = svg.append("g")
+            .selectAll("text")
+            .data(nodes)
+            .enter().append("text")
+            .text(d => d.name)
+            .attr("font-size", "10px")
+            .attr("fill", "#333")
+            .attr("text-anchor", "middle")
+            .attr("dy", "0.35em");
+
+        // Add tooltips
+        node.append("title")
+            .text(d => {
+                if (d.type === 'technology') {
+                    return `${d.name} (Technology)`;
+                }
+                return `${d.name}\n${d.description}\nTags: ${d.tags.join(", ")}`;
+            });
+
+        // Update positions with boundary constraints
+        simulation.on("tick", () => {
+            // Constrain nodes to stay within bounds
+            nodes.forEach(d => {
+                const radius = d.type === 'technology' ? 4 : 6;
+                d.x = Math.max(padding + radius, Math.min(width - padding - radius, d.x));
+                d.y = Math.max(padding + radius, Math.min(height - padding - radius, d.y));
+            });
+
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            node
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y);
+
+            label
+                .attr("x", d => d.x)
+                .attr("y", d => d.y + (d.type === 'technology' ? 8 : 15));
+        });
+
+        // Drag functions with boundary constraints
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            const radius = d.type === 'technology' ? 4 : 6;
+            d.fx = Math.max(padding + radius, Math.min(width - padding - radius, event.x));
+            d.fy = Math.max(padding + radius, Math.min(height - padding - radius, event.y));
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+        // Add click handler to open links (only for projects)
+        node.on("click", (event, d) => {
+            if (d.type === 'project' && d.link) {
+                window.open(d.link, "_blank");
+            }
+        });
+        }
+    </script>
+</body>
+</html>
