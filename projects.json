@@ -38,7 +38,7 @@
         },
         {
             "name": "BotBattle",
-            "description": "Designed a language and parser",
+            "description": "(ongoing) designing a language and parser",
             "link": "https://botbattle.be/",
             "tags": ["language design", "parser"]
         },
@@ -50,7 +50,7 @@
         },
         {
             "name": "DSA",
-            "description": "Student job at UGent",
+            "description": "Student job at UGent (ongoing)",
             "link": "https://https://dsa.ugent.be/",
             "tags": ["Elixir", "web", "Phoenix"]
         },

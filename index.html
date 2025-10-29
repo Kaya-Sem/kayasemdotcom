@@ -29,7 +29,6 @@
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script>
-        // Load data from external JSON file
         fetch('projects.json')
             .then(response => response.json())
             .then(data => {
@@ -42,7 +41,6 @@
 
         function createGraph(data) {
 
-        // Create project nodes
         const projectNodes = data.projects.map(project => ({
             id: project.name,
             name: project.name,
@@ -52,20 +50,16 @@
             type: 'project'
         }));
 
-        // Get all unique technologies
         const allTags = [...new Set(data.projects.flatMap(project => project.tags))];
         
-        // Create technology nodes
         const techNodes = allTags.map(tag => ({
             id: tag,
             name: tag,
             type: 'technology'
         }));
 
-        // Combine all nodes
         const nodes = [...projectNodes, ...techNodes];
 
-        // Create links between projects and their technologies
         const links = [];
         data.projects.forEach(project => {
             project.tags.forEach(tag => {
@@ -76,16 +70,14 @@
             });
         });
 
-        // Set up SVG
         const width = 800;
         const height = 600;
-        const padding = 50; // Padding to keep nodes away from edges
+        const padding = 50; 
         const svg = d3.select("#graph-container")
             .append("svg")
             .attr("width", width)
             .attr("height", height);
 
-        // Create simulation with boundary constraints
         const simulation = d3.forceSimulation(nodes)
             .force("link", d3.forceLink(links).id(d => d.id).distance(80))
             .force("charge", d3.forceManyBody().strength(-200))
@@ -94,7 +86,6 @@
             .force("x", d3.forceX(width / 2).strength(0.1))
             .force("y", d3.forceY(height / 2).strength(0.1));
 
-        // Create links
         const link = svg.append("g")
             .selectAll("line")
             .data(links)
@@ -103,7 +94,6 @@
             .attr("stroke-opacity", 0.6)
             .attr("stroke-width", 1);
 
-        // Create nodes
         const node = svg.append("g")
             .selectAll("circle")
             .data(nodes)
@@ -117,7 +107,6 @@
                 .on("drag", dragged)
                 .on("end", dragended));
 
-        // Add labels
         const label = svg.append("g")
             .selectAll("text")
             .data(nodes)
@@ -128,7 +117,6 @@
             .attr("text-anchor", "middle")
             .attr("dy", "0.35em");
 
-        // Add tooltips
         node.append("title")
             .text(d => {
                 if (d.type === 'technology') {
@@ -137,9 +125,7 @@
                 return `${d.name}\n${d.description}\nTags: ${d.tags.join(", ")}`;
             });
 
-        // Update positions with boundary constraints
         simulation.on("tick", () => {
-            // Constrain nodes to stay within bounds
             nodes.forEach(d => {
                 const radius = d.type === 'technology' ? 4 : 6;
                 d.x = Math.max(padding + radius, Math.min(width - padding - radius, d.x));
@@ -161,7 +147,6 @@
                 .attr("y", d => d.y + (d.type === 'technology' ? 8 : 15));
         });
 
-        // Drag functions with boundary constraints
         function dragstarted(event, d) {
             if (!event.active) simulation.alphaTarget(0.3).restart();
             d.fx = d.x;
@@ -180,7 +165,6 @@
             d.fy = null;
         }
 
-        // Add click handler to open links (only for projects)
         node.on("click", (event, d) => {
             if (d.type === 'project' && d.link) {
                 window.open(d.link, "_blank");
