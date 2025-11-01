@@ -6,12 +6,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content=
   "width=device-width, initial-scale=1.0">
-  <title>Kaya Sem - Personal Website</title>
+  <title>Kaya-Sem</title>
   <style>
         a { text-decoration: none; }
   </style>
 </head>
 <body>
+  <h3>Connect</h3>
   <ul>
     <li>
       <a href="https://github.com/Kaya-Sem" target="_blank" rel=
@@ -41,10 +42,11 @@
       "noopener noreferrer">Broeder Bourgondiër</a>
     </li>
   </ul>
-  <h3>Projects, work and events</h3>
+  <h3>Projects & Experience</h3>
   <div id="graph-container"></div>
   <script src="https://d3js.org/d3.v7.min.js"></script> 
   <script>
+
 
 
         fetch('projects.json')
@@ -53,8 +55,7 @@
                 createGraph(data);
             })
             .catch(error => {
-                console.error('Error loading projects data:', error);
-                document.getElementById('graph-container').innerHTML = '<p>Error loading projects data</p>';
+                document.getElementById('graph-container').innerHTML = '<p>Error loading projects data, I must suck at this computer stuff.</p>';
             });
 
         function createGraph(data) {
@@ -88,9 +89,9 @@
             });
         });
 
-        const width = 800;
-        const height = 600;
-        const padding = 50; 
+        const width = 500;
+        const height = 500;
+        const padding = 10; 
         const svg = d3.select("#graph-container")
             .append("svg")
             .attr("width", width)
