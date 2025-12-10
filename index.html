@@ -1,18 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for HTML5 for Linux version 5.7.45">
   <meta charset="UTF-8">
-  <meta name="viewport" content=
-  "width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kaya-Sem</title>
   <style>
         body {
             font-family: "SFMono-Regular", Consolas, "Liberation Mono", "Courier New", monospace;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
         a {
             text-decoration: none;
+        }
+        .graph-legend {
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+        }
+        .legend-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        .project-dot {
+            background: #ff6b6b;
+        }
+        .tech-dot {
+            background: #95a5a6;
         }
   </style>
 </head>
@@ -20,34 +43,33 @@
   <h3>Connect</h3>
   <ul>
     <li>
-      <a href="https://github.com/Kaya-Sem" target="_blank" rel=
-      "noopener noreferrer">GitHub</a>
+      <a href="https://github.com/Kaya-Sem" target="_blank" rel="noopener noreferrer">GitHub</a>
     </li>
     <li>
-      <a href="https://www.linkedin.com/in/kaya-sem-70395a323/"
-      target="_blank" rel="noopener noreferrer">Linkedin</a>
+      <a href="https://www.linkedin.com/in/kaya-sem-70395a323/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
     </li>
   </ul>
   <h3>Websites</h3>
   <ul>
     <li>
-      <a href="https://kaya-scam.com/" target="_blank" rel=
-      "noopener noreferrer">Kaya-Scam</a>
+      <a href="https://kaya-scam.com/" target="_blank" rel="noopener noreferrer">Kaya-Scam</a>
     </li>
     <li>
-      <a href="https://outdoorshops.kaya-sem.com/" target="_blank"
-      rel="noopener noreferrer">Outdoor Gear Shops</a>
+      <a href="https://outdoorshops.kaya-sem.com/" target="_blank" rel="noopener noreferrer">Outdoor Gear Shops</a>
     </li>
     <li>
-      <a href="https://rooftopper.club/" target="_blank" rel=
-      "noopener noreferrer">Rooftopper</a>
+      <a href="https://rooftopper.club/" target="_blank" rel="noopener noreferrer">Rooftopper</a>
     </li>
     <li>
-      <a href="https://broederbourgondier.be/" target="_blank" rel=
-      "noopener noreferrer">Broeder Bourgondiër</a>
+      <a href="https://broederbourgondier.be/" target="_blank" rel="noopener noreferrer">Broeder Bourgondiër</a>
     </li>
   </ul>
   <h3>Projects & Experience</h3>
+  <div class="graph-legend">
+    <span class="legend-item"><span class="legend-dot project-dot"></span>Projects</span>
+    <span class="legend-item"><span class="legend-dot tech-dot"></span>Technologies</span>
+    <span style="margin-left: 20px; font-style: italic;">Click project nodes to view details • Drag nodes to explore</span>
+  </div>
   <div id="graph-container"></div>
   <script src="https://d3js.org/d3.v7.min.js"></script> 
   <script>
@@ -55,12 +77,18 @@
 
 
         fetch('projects.json')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to load projects data');
+                }
+                return response.json();
+            })
             .then(data => {
                 createGraph(data);
             })
             .catch(error => {
-                document.getElementById('graph-container').innerHTML = '<p>Error loading projects data, I must suck at this computer stuff.</p>';
+                console.error('Error loading projects:', error);
+                document.getElementById('graph-container').innerHTML = '<p>Error loading projects data. Please try refreshing the page.</p>';
             });
 
         function createGraph(data) {
@@ -94,13 +122,20 @@
             });
         });
 
-        const width = 500;
-        const height = 500;
+        const container = document.getElementById("graph-container");
+        container.innerHTML = ''; // Clear loading message
+        
+        const containerRect = container.getBoundingClientRect();
+        const width = Math.max(500, containerRect.width - 40);
+        const height = Math.max(500, window.innerWidth < 768 ? 400 : 500);
         const padding = 10; 
+        
         const svg = d3.select("#graph-container")
             .append("svg")
             .attr("width", width)
-            .attr("height", height);
+            .attr("height", height)
+            .attr("viewBox", `0 0 ${width} ${height}`)
+            .attr("preserveAspectRatio", "xMidYMid meet");
 
         const simulation = d3.forceSimulation(nodes)
             .force("link", d3.forceLink(links).id(d => d.id).distance(80))
@@ -126,6 +161,17 @@
             .attr("fill", d => d.type === 'technology' ? "#95a5a6" : "#ff6b6b")
             .attr("stroke", "#fff")
             .attr("stroke-width", 2)
+            .style("cursor", d => d.type === 'project' ? "pointer" : "default")
+            .on("mouseover", function(event, d) {
+                d3.select(this)
+                    .attr("r", d => d.type === 'technology' ? 6 : 8)
+                    .attr("stroke-width", 3);
+            })
+            .on("mouseout", function(event, d) {
+                d3.select(this)
+                    .attr("r", d => d.type === 'technology' ? 4 : 6)
+                    .attr("stroke-width", 2);
+            })
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
@@ -191,7 +237,7 @@
 
         node.on("click", (event, d) => {
             if (d.type === 'project' && d.link) {
-                window.open(d.link, "_blank");
+                window.open(d.link, "_blank", "noopener,noreferrer");
             }
         });
         }
