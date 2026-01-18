@@ -14,14 +14,36 @@
         a {
             text-decoration: none;
         }
+        h3 {
+            margin-bottom: 10px;
+        }
+        .top-section {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+        .left-column {
+            flex: 0 0 auto;
+        }
+        .right-column {
+            flex: 1;
+        }
         .graph-legend {
-            margin-bottom: 15px;
+            margin-bottom: 0px;
             font-size: 0.9em;
             color: #666;
         }
+        .legend-instructions {
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        .legend-items {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
         .legend-item {
-            display: inline-block;
-            margin-right: 20px;
+            display: block;
         }
         .legend-dot {
             display: inline-block;
@@ -37,40 +59,58 @@
         .tech-dot {
             background: #95a5a6;
         }
+        .work-dot {
+            background: #6c5ce7;
+        }
+        @media (max-width: 768px) {
+            .top-section {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
   </style>
 </head>
 <body>
-  <h3>Connect</h3>
-  <ul>
-    <li>
-      <a href="https://github.com/Kaya-Sem" target="_blank" rel="noopener noreferrer">GitHub</a>
-    </li>
-    <li>
-      <a href="https://www.linkedin.com/in/kaya-sem-70395a323/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-    </li>
-  </ul>
-  <!--
-  <h3>Websites</h3>
-  <ul>
-    <li>
-      <a href="https://kaya-scam.com/" target="_blank" rel="noopener noreferrer">Kaya-Scam</a>
-    </li>
-    <li>
-      <a href="https://outdoorshops.kaya-sem.com/" target="_blank" rel="noopener noreferrer">Outdoor Gear Shops</a>
-    </li>
-    <li>
-      <a href="https://rooftopper.club/" target="_blank" rel="noopener noreferrer">Rooftopper</a>
-    </li>
-    <li>
-      <a href="https://broederbourgondier.be/" target="_blank" rel="noopener noreferrer">Broeder Bourgondiër</a>
-    </li>
-  </ul>
-  -->
-  <h3>Projects & Experience</h3>
-  <div class="graph-legend">
-    <span class="legend-item"><span class="legend-dot project-dot"></span>Projects</span>
-    <span class="legend-item"><span class="legend-dot tech-dot"></span>Technologies</span>
-    <span style="margin-left: 20px; font-style: italic;">Click project nodes to view details • Drag nodes to explore</span>
+  <div class="top-section">
+    <div class="left-column">
+      <h3>Connect</h3>
+      <ul>
+        <li>
+          <a href="https://github.com/Kaya-Sem" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </li>
+        <li>
+          <a href="https://www.linkedin.com/in/kaya-sem-70395a323/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        </li>
+      </ul>
+      <!--
+      <h3>Websites</h3>
+      <ul>
+        <li>
+          <a href="https://kaya-scam.com/" target="_blank" rel="noopener noreferrer">Kaya-Scam</a>
+        </li>
+        <li>
+          <a href="https://outdoorshops.kaya-sem.com/" target="_blank" rel="noopener noreferrer">Outdoor Gear Shops</a>
+        </li>
+        <li>
+          <a href="https://rooftopper.club/" target="_blank" rel="noopener noreferrer">Rooftopper</a>
+        </li>
+        <li>
+          <a href="https://broederbourgondier.be/" target="_blank" rel="noopener noreferrer">Broeder Bourgondiër</a>
+        </li>
+      </ul>
+      -->
+    </div>
+    <div class="right-column">
+      <h3>Projects & Experience</h3>
+      <div class="graph-legend">
+        <div class="legend-instructions">Click project nodes to view details • Drag nodes to explore</div>
+        <div class="legend-items">
+          <span class="legend-item"><span class="legend-dot project-dot"></span>Projects</span>
+          <span class="legend-item"><span class="legend-dot work-dot"></span>Work Experience</span>
+          <span class="legend-item"><span class="legend-dot tech-dot"></span>Technologies</span>
+        </div>
+      </div>
+    </div>
   </div>
   <div id="graph-container"></div>
   <script src="https://d3js.org/d3.v7.min.js"></script> 
@@ -101,7 +141,7 @@
             description: project.description,
             link: project.link,
             tags: project.tags,
-            type: 'project'
+            type: project.type || 'project'
         }));
 
         const allTags = [...new Set(data.projects.flatMap(project => project.tags))];
@@ -125,12 +165,17 @@
         });
 
         const container = document.getElementById("graph-container");
-        container.innerHTML = ''; // Clear loading message
+        container.innerHTML = '';
         
         const containerRect = container.getBoundingClientRect();
-        const width = Math.max(500, containerRect.width - 40);
-        const height = Math.max(500, window.innerWidth < 768 ? 400 : 500);
-        const padding = 10; 
+        const width = Math.max(700, containerRect.width - 40);
+        const height = Math.max(500, window.innerWidth < 768 ? 500 : 700);
+        const padding = 10;
+        
+        nodes.forEach(node => {
+            node.x = Math.random() * width;
+            node.y = Math.random() * height;
+        }); 
         
         const svg = d3.select("#graph-container")
             .append("svg")
@@ -141,9 +186,13 @@
 
         const simulation = d3.forceSimulation(nodes)
             .force("link", d3.forceLink(links).id(d => d.id).distance(80))
-            .force("charge", d3.forceManyBody().strength(-200))
+            .force("charge", d3.forceManyBody().strength(-350))
             .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collision", d3.forceCollide().radius(d => d.type === 'technology' ? 8 : 12))
+            .force("collision", d3.forceCollide().radius(d => {
+                if (d.type === 'technology') return 8;
+                if (d.type === 'work') return 12;
+                return 12;
+            }))
             .force("x", d3.forceX(width / 2).strength(0.1))
             .force("y", d3.forceY(height / 2).strength(0.1));
 
@@ -159,11 +208,18 @@
             .selectAll("circle")
             .data(nodes)
             .enter().append("circle")
-            .attr("r", d => d.type === 'technology' ? 4 : 6)
-            .attr("fill", d => d.type === 'technology' ? "#95a5a6" : "#ff6b6b")
+            .attr("r", d => {
+                if (d.type === 'technology') return 4;
+                return 6;
+            })
+            .attr("fill", d => {
+                if (d.type === 'technology') return "#95a5a6";
+                if (d.type === 'work') return "#6c5ce7";
+                return "#ff6b6b";
+            })
             .attr("stroke", "#fff")
             .attr("stroke-width", 2)
-            .style("cursor", d => d.type === 'project' ? "pointer" : "default")
+            .style("cursor", d => (d.type === 'project' || d.type === 'work') ? "pointer" : "default")
             .on("mouseover", function(event, d) {
                 d3.select(this)
                     .attr("r", d => d.type === 'technology' ? 6 : 8)
@@ -171,7 +227,10 @@
             })
             .on("mouseout", function(event, d) {
                 d3.select(this)
-                    .attr("r", d => d.type === 'technology' ? 4 : 6)
+                    .attr("r", d => {
+                        if (d.type === 'technology') return 4;
+                        return 6;
+                    })
                     .attr("stroke-width", 2);
             })
             .call(d3.drag()
@@ -193,6 +252,9 @@
             .text(d => {
                 if (d.type === 'technology') {
                     return `${d.name} (Technology)`;
+                }
+                if (d.type === 'work') {
+                    return `${d.name} (Work Experience)\n${d.description}\nTags: ${d.tags.join(", ")}`;
                 }
                 return `${d.name}\n${d.description}\nTags: ${d.tags.join(", ")}`;
             });
@@ -216,7 +278,10 @@
 
             label
                 .attr("x", d => d.x)
-                .attr("y", d => d.y + (d.type === 'technology' ? 8 : 15));
+                .attr("y", d => {
+                    if (d.type === 'technology') return d.y + 8;
+                    return d.y + 15;
+                });
         });
 
         function dragstarted(event, d) {
@@ -238,7 +303,7 @@
         }
 
         node.on("click", (event, d) => {
-            if (d.type === 'project' && d.link) {
+            if ((d.type === 'project' || d.type === 'work') && d.link) {
                 window.open(d.link, "_blank", "noopener,noreferrer");
             }
         });

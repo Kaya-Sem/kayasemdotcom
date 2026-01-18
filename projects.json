@@ -40,7 +40,8 @@
             "name": "BotBattle",
             "description": "(ongoing) designing a language and parser",
             "link": "https://botbattle.be/",
-            "tags": ["language design", "parser", "work experience"]
+            "tags": ["language design", "parser"],
+            "type": "work"
         },
         {
             "name": "Friendsync",
@@ -52,7 +53,8 @@
             "name": "DSA",
             "description": "Student job at UGent (ongoing)",
             "link": "https://dsa.ugent.be/",
-            "tags": ["Elixir", "web", "Phoenix", "work experience"]
+            "tags": ["Elixir", "web", "Phoenix"],
+            "type": "work"
         },
         {
             "name": "kaya-scam.com",
