@@ -19,6 +19,12 @@
             "tags": ["go", "cli", "api"]
         },
         {
+            "name": "avmp",
+            "description": "C++ desktop music player",
+            "link": "https://github.com/Kaya-Sem/avmp",
+            "tags": ["linux", "c++", "Qt"]
+        },
+        {
             "name": "RSS-builder",
             "description": "Simple RSS library",
             "link": "https://github.com/Kaya-Sem/rss-builder",
