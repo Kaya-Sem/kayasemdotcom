@@ -63,6 +63,13 @@
             "type": "work"
         },
         {
+            "name": "Vintecc",
+            "description": "Internship at Vintecc(ongoing)",
+            "link": "https://www.vintecc.com/",
+            "tags": ["c++"],
+            "type": "work"
+        },
+        {
             "name": "kaya-scam.com",
             "description": "my less serious website",
             "link": "https://kaya-scam.com/",
