@@ -70,6 +70,13 @@
             "type": "work"
         },
         {
+            "name": "rooftopper.club",
+            "description": "Crowdsourced rooftopping locations",
+            "link": "https://github.com/Kaya-Sem/rooftopper.club",
+            "tags": ["web"],
+            "type": "work"
+        },
+        {
             "name": "kaya-scam.com",
             "description": "my less serious website",
             "link": "https://kaya-scam.com/",
